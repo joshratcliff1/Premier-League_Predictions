@@ -1,5 +1,8 @@
 import pandas as pd
+from datetime import datetime
 
+now = datetime.now() # current date and time
+today = now.strftime('%Y-%m-%d')
 
 ''' https://fixturedownload.com/results/epl-2020 '''
 
@@ -140,18 +143,26 @@ for index, row in df_f.iterrows():
     teams[row['Away Team']]['Away_points'] += point_update_a
     teams[row['Away Team']]['Total_points'] += point_update_a
 
-# Print stats for viewing after all games
-print("\nFinal Standings at end of Season")
-
 result_list = []
 
 for team, stats in teams.items():
     result_list.append((team, round(stats['Total_points'])))
 
-result_list.sort(key=lambda x: x[1], reverse=True)
+print('PL predictions on ', today, '\n')
 
-tot_points = 0
+result_list.sort(key = lambda x: x[1], reverse=True)
 
-for item in result_list:
-    tot_points += item[1]
-    print(item)
+for team, pts in result_list:
+    print(team, pts)
+
+result_list.sort()
+
+df_output = pd.DataFrame(result_list, columns=['team', today])
+
+df_output = df_output.drop(['team'], axis=1)
+
+df_output = df_output.transpose()
+
+df_output.to_csv('predict.csv', mode='a', header=False)
+
+print('\n PL Predictions have been written to csv')
